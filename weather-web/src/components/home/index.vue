@@ -8,7 +8,7 @@
         <div id="sun">
           <!-- 当前地址的信息 -->
           <CurrentAddressWeather :city="we.city" :weather="we.weather" :templow="we.templow" :temphigh="we.temphigh" :winddirect="we.winddirect" :windpower="we.windpower"
-          :date="we.date" :weatherImg="we.img" :week="we.week" :temp="we.temp" :pm25="we.aqi.ipm2_5" :descriptColor="we.aqi.aqiinfo.color" :level="we.aqi.aqiinfo.level" :quality="we.aqi.quality " :humidity="we.humidity"   />
+          :date="we.date" :weatherImg="we.img" :week="we.week" :temp="we.temp" :pm25="we.aqi.ipm2_5" :descriptColor="we.aqi.aqiinfo.color" :level="we.aqi.aqiinfo.level" :quality="we.aqi.quality " :humidity="we.humidity" @openDrawer="openLoginDrawer" />
           <!-- 今天24小时线形天气 -->
           <TodayWeather :hourly="we.hourly" />
           <!-- 生活指数 -->
@@ -23,127 +23,148 @@
     <!-- 右侧抽屉 -->
       <el-drawer
         title="个人中心"
-        style="font-size:25px;font-weight: bold;font-family:'微软雅黑'"
         :visible.sync="drawer"
         size="30%"
-        >
-        <div>
-          <div style="background-color:rgb(222,225,230)" class="userBox">
-            <img  id="userImg" :src="'assets/weathercn/'+img+'.png'" alt="破损">
+        class="user-drawer">
+        <div class="drawer-container">
+          <!-- 头像区域 -->
+          <div class="avatar-box">
+            <img :src="'assets/weathercn/'+img+'.png'" alt="用户头像" class="user-avatar">
           </div>
-          <div style="margin-top:50px;text-align: center;font-size:15px">
-            <p v-if="false">
-              未登录
-            </p>
-            <p style="margin-right:10px">
-              {{userInfo.nickname}}
-            </p>
+
+          <!-- 用户昵称显示区 -->
+          <div class="nickname-box">
+            <p v-if="userInfo.nickname">{{userInfo.nickname}}</p>
+            <p v-else class="login-tip">未登录</p>
           </div>
+
           <!-- 登录表单 -->
-          <div v-if="!userInfo.nickname" v-show="register==0"  class="formBox">
+          <div v-if="!userInfo.nickname" v-show="register==0" class="login-form">
             <el-form>
               <el-form-item>
-                <span>
-                  <i class="el-icon-user-solid userIcon"></i>
-                </span>
-                <input v-model="user.username" style="background: transparent;" class="userInput" />
+                <div class="input-with-icon">
+                  <i class="el-icon-user-solid"></i>
+                  <input v-model="user.username" placeholder="请输入账号" class="custom-input" />
+                </div>
               </el-form-item>
-              <el-form-item style="margin-bottom:0px">
-                <span>
-                  <i class="el-icon-lock userIcon"></i>
-                </span>
-                <input type="password" v-model="user.password" style="background: transparent;" class="userInput" />
-                <!-- <a style="float:right;">忘记密码？</a> -->
+              <el-form-item>
+                <div class="input-with-icon">
+                  <i class="el-icon-lock"></i>
+                  <input type="password" v-model="user.password" placeholder="请输入密码" class="custom-input" />
+                </div>
               </el-form-item>
             </el-form>
-            <button class="userBtn" @click="login">登录</button>
-             <a style="float:right;font-size:15px;margin-top:10px;margin-right:5px;color:green;" @click="register=1">免费注册</a>
-          </div>
-          <!-- 用户信息 -->
-          <div v-else class="userInfo">
-            <h3 style="font-size:20px;margin-bottom:20px;margin-left:-25px">基本信息</h3>
-            <p>
-              <span>&nbsp;I&nbsp;D&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <span style="width:100px;overflow:hidden;display:inline-block;">{{userInfo.id}}...</span>
-            </p>
-            <p class="userEdit">
-              <span>账号&nbsp;&nbsp;</span>
-              <span v-show="edit==0">{{userInfo.username}}</span>
-              <input style="width:140px;height:25px;"  v-model="userInfo.username" v-show="edit==1" />
-              <a v-show="edit==0"  @click="edit=1" href="#">&nbsp;&nbsp; <i class="el-icon-edit-outline"></i>编辑</a>
-              <el-button type="success" size="mini" v-show="edit==1"  @click="submitUserinfo(userInfo.username)" href="#"> <i style="color:green" class="el-icon-success"></i>完成</el-button>
-            </p>
-            <p>
-              <span>邮箱&nbsp;&nbsp;</span>
-              <span v-show="edit2==0">{{userInfo.email}}</span>
-         
-              <input style="width:140px;height:25px;" v-model="userInfo.email" v-show="edit2==2" />
-              <a v-show="edit2==0"  @click="edit2=2" href="#">&nbsp;&nbsp; <i class="el-icon-edit-outline"></i>编辑</a>
-              <el-button type="success" size="mini" v-show="edit2==2"  @click="submitUserinfo(userInfo.email)" href="#"> <i style="color:green" class="el-icon-success"></i>完成</el-button>
-            </p>
-            <p>
-              <span>姓名&nbsp;&nbsp;</span>
-              <span v-show="edit3==0">{{userInfo.nickname}}</span>
-              
-              <input style="width:140px;height:25px;" v-model="userInfo.nickname" v-show="edit3==3" />
-              <a v-show="edit3==0"  @click="edit3=3" href="#">&nbsp;&nbsp; <i class="el-icon-edit-outline"></i>编辑</a>
-              <el-button type="success" size="mini" v-show="edit3==3"  @click="submitUserinfo(userInfo.nickname)" href="#"> <i style="color:green" class="el-icon-success"></i>完成</el-button>
-            </p>
-            <p>
-              <span>性别&nbsp;&nbsp;</span>
-              <span v-show="edit4==0">{{userInfo.sex}}</span>
-         
-              <input style="width:140px;height:25px;" v-model="userInfo.sex" v-show="edit4==4" />
-              <a v-show="edit4==0"  @click="edit4=4" href="#">&nbsp;&nbsp; <i class="el-icon-edit-outline"></i>编辑</a>
-              <el-button type="success" size="mini" v-show="edit4==4"  @click="submitUserinfo(userInfo.sex)" href="#"> <i style="color:green" class="el-icon-success"></i>完成</el-button>
-            </p>
-            <p>
-              <span>年龄&nbsp;&nbsp;</span>
-              <span v-show="edit5==0">{{userInfo.age}}</span>
-            
-              <input style="width:140px;height:25px;" v-model="userInfo.age" v-show="edit5==5" />
-              <a v-show="edit5==0"  @click="edit5=5" href="#">&nbsp;&nbsp; <i class="el-icon-edit-outline"></i>编辑</a>
-              <el-button type="success" size="mini" v-show="edit5==5"  @click="submitUserinfo(userInfo.age)" href="#"> <i style="color:green" class="el-icon-success"></i>完成</el-button>
-            </p>
-            <el-button style="float:right" type="error" @click="logout" size="mini">退出登录</el-button>
-            <el-button style="float:right" type="primary" @click="editPwd=1" size="mini">修改密码</el-button>
-            <div style="margin-top:50px;margin-left: auto;margin-right:auto;" v-show="editPwd==1">
-              <span>请输入旧密码</span>
-              <input v-model="editUser.oldPwd" /><br />
-              <span>请输入新密码</span>
-              <input v-model="editUser.newPwd"/>
-              <el-button style="float:right" type="success" @click="submitUpdatePwd" size="mini">提交</el-button>
+            <button class="custom-button login-button" @click="login">登 录</button>
+            <div class="form-footer">
+              <a class="register-link" @click="register=1">免费注册</a>
             </div>
           </div>
-          
-          <!-- 注册div -->
-          <div>
-            <div v-show="register==1"  class="formBox">
+
+          <!-- 注册表单 -->
+          <div v-show="register==1" class="register-form">
             <el-form>
               <el-form-item>
-                <span style="margin-left:20px">昵称：</span>
-                <input v-model="userR.nickname" style="width:140px;background: transparent;" class="userInput" />
+                <div class="input-with-icon">
+                  <i class="el-icon-user"></i>
+                  <input v-model="userR.nickname" placeholder="请输入昵称" class="custom-input" />
+                </div>
               </el-form-item>
               <el-form-item>
-                <span>
-                  <i class="el-icon-user-solid userIcon"></i>
-                </span>
-                <input v-model="userR.username" placeholder="登录账号" style="background: transparent;" class="userInput" />
+                <div class="input-with-icon">
+                  <i class="el-icon-user-solid"></i>
+                  <input v-model="userR.username" placeholder="请输入账号" class="custom-input" />
+                </div>
               </el-form-item>
-              <el-form-item style="margin-bottom:0px">
-                <span>
-                  <i class="el-icon-lock userIcon"></i>
-                </span>
-                <input v-model="userR.password"  placeholder="登录密码" style="background: transparent;" class="userInput" />
-                
+              <el-form-item>
+                <div class="input-with-icon">
+                  <i class="el-icon-lock"></i>
+                  <input type="password" v-model="userR.password" placeholder="请输入密码" class="custom-input" />
+                </div>
               </el-form-item>
             </el-form>
-            <button class="userBtn" @click="gotoRegister">注册</button>
-            <a style="float:right;font-size:15px;margin-top:10px;margin-right:5px;color:green;" @click="register=0">去登录</a>
-             
+            <button class="custom-button register-button" @click="gotoRegister">注 册</button>
+            <div class="form-footer">
+              <a class="login-link" @click="register=0">返回登录</a>
+            </div>
           </div>
+
+          <!-- 用户信息展示 -->
+          <div v-if="userInfo.nickname" class="user-info">
+            <h3 class="info-title">基本信息</h3>
+            <div class="info-item">
+              <span class="info-label">ID</span>
+              <span class="info-value">{{userInfo.id}}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">账号</span>
+              <span v-show="edit==0" class="info-value">{{userInfo.username}}</span>
+              <div v-show="edit==1" class="edit-input-group">
+                <input class="edit-input" v-model="userInfo.username" />
+                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.username)">
+                  <i class="el-icon-check"></i>
+                </el-button>
+              </div>
+              <i v-show="edit==0" class="el-icon-edit edit-icon" @click="edit=1"></i>
+            </div>
+            <div class="info-item">
+              <span class="info-label">邮箱</span>
+              <span v-show="edit2==0" class="info-value">{{userInfo.email}}</span>
+              <div v-show="edit2==2" class="edit-input-group">
+                <input class="edit-input" v-model="userInfo.email" />
+                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.email)">
+                  <i class="el-icon-check"></i>
+                </el-button>
+              </div>
+              <i v-show="edit2==0" class="el-icon-edit edit-icon" @click="edit2=2"></i>
+            </div>
+            <div class="info-item">
+              <span class="info-label">姓名</span>
+              <span v-show="edit3==0" class="info-value">{{userInfo.nickname}}</span>
+              <div v-show="edit3==3" class="edit-input-group">
+                <input class="edit-input" v-model="userInfo.nickname" />
+                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.nickname)">
+                  <i class="el-icon-check"></i>
+                </el-button>
+              </div>
+              <i v-show="edit3==0" class="el-icon-edit edit-icon" @click="edit3=3"></i>
+            </div>
+            <div class="info-item">
+              <span class="info-label">性别</span>
+              <span v-show="edit4==0" class="info-value">{{userInfo.sex}}</span>
+              <div v-show="edit4==4" class="edit-input-group">
+                <input class="edit-input" v-model="userInfo.sex" />
+                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.sex)">
+                  <i class="el-icon-check"></i>
+                </el-button>
+              </div>
+              <i v-show="edit4==0" class="el-icon-edit edit-icon" @click="edit4=4"></i>
+            </div>
+            <div class="info-item">
+              <span class="info-label">年龄</span>
+              <span v-show="edit5==0" class="info-value">{{userInfo.age}}</span>
+              <div v-show="edit5==5" class="edit-input-group">
+                <input class="edit-input" v-model="userInfo.age" />
+                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.age)">
+                  <i class="el-icon-check"></i>
+                </el-button>
+              </div>
+              <i v-show="edit5==0" class="el-icon-edit edit-icon" @click="edit5=5"></i>
+            </div>
+
+            <div class="action-buttons">
+              <el-button type="primary" @click="editPwd=1" size="small">修改密码</el-button>
+              <el-button type="danger" @click="logout" size="small">退出登录</el-button>
+            </div>
+
+            <!-- 修改密码表单 -->
+            <div v-show="editPwd==1" class="change-password-form">
+              <div class="password-input-group">
+                <input type="password" v-model="editUser.oldPwd" placeholder="请输入旧密码" class="custom-input" />
+                <input type="password" v-model="editUser.newPwd" placeholder="请输入新密码" class="custom-input" />
+              </div>
+              <el-button type="success" @click="submitUpdatePwd" size="small">确认修改</el-button>
+            </div>
           </div>
-          
         </div>
       </el-drawer>
   </div>
@@ -247,7 +268,22 @@ export default {
            
           }
        )
-     }
+     },
+    goToRainfallMap() {
+      if (this.$store.state.userinfo.id) {
+        this.$router.push('/rainfall-map')
+      } else {
+        this.$message({
+          message: '请先登录后查看',
+          type: 'warning'
+        })
+        // 可以选择打开登录框
+        this.drawer = true  // 假设drawer是控制登录框显示的变量
+      }
+    },
+    openLoginDrawer() {
+      this.drawer = true
+    }
   },
   mounted(){
     pubsub.subscribe('selectCity',async (methodName,e)=>{
@@ -363,5 +399,215 @@ p:hover a{
   margin-top: 30px;
   /* border: 1px solid black; */
   background: #ffffff;
+}
+.rainfall-btn-container {
+  text-align: center;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.rainfall-btn {
+  font-size: 16px;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.rainfall-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 抽屉样式 */
+.user-drawer {
+  font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.drawer-container {
+  padding: 20px;
+}
+
+/* 头像区域 */
+.avatar-box {
+  background-color: rgb(222,225,230);
+  padding: 20px 0;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.user-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+/* 昵称显示区 */
+.nickname-box {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 16px;
+}
+
+.login-tip {
+  color: #909399;
+}
+
+/* 表单样式 */
+.login-form, .register-form {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.input-with-icon {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #909399;
+  font-size: 16px;
+}
+
+.custom-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 15px 0 35px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  font-size: 14px;
+  background: transparent;
+  transition: all 0.3s;
+}
+
+.custom-input:focus {
+  border-color: #409EFF;
+  outline: none;
+}
+
+.custom-button {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.login-button {
+  background-color: #409EFF;
+  color: white;
+}
+
+.register-button {
+  background-color: #67C23A;
+  color: white;
+}
+
+.custom-button:hover {
+  opacity: 0.9;
+}
+
+.form-footer {
+  text-align: right;
+  margin-top: 15px;
+}
+
+.register-link, .login-link {
+  color: #409EFF;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* 用户信息样式 */
+.user-info {
+  padding: 20px;
+}
+
+.info-title {
+  font-size: 20px;
+  margin-bottom: 25px;
+  color: #303133;
+  font-weight: 500;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.info-item:hover {
+  background-color: #f5f7fa;
+}
+
+.info-label {
+  width: 60px;
+  color: #606266;
+}
+
+.info-value {
+  flex: 1;
+  color: #303133;
+}
+
+.edit-icon {
+  color: #409EFF;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.info-item:hover .edit-icon {
+  opacity: 1;
+}
+
+.edit-input-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.edit-input {
+  flex: 1;
+  height: 32px;
+  padding: 0 10px;
+  margin-right: 10px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+}
+
+/* 操作按钮 */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* 修改密码表单 */
+.change-password-form {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+
+.password-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
 }
 </style>

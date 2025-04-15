@@ -67,6 +67,14 @@
                 <span>&nbsp;&nbsp;{{winddirect}}</span>
             </p>
           </div>
+          <div class="rainfall-btn-container">
+            <el-button 
+              class="rainfall-btn"
+              @click="handleRainfallClick">
+              <i class="el-icon-map-location"></i>
+              查看全国降水量分布图
+            </el-button>
+          </div>
       </div>
       <div>
           <p style="margin-top:30px">
@@ -128,8 +136,24 @@ export default {
                 this.$store.commit('setLike', arr);//保存过滤信息
                 console.log(response)
             })
+        },
+        handleRainfallClick() {
+            if (!this.$store.state.userinfo.id) {
+                this.$message({
+                    message: '请先登录后查看',
+                    type: 'warning',
+                    duration: 2000
+                })
+                
+                this.$emit('openDrawer')
+                
+                return
+            }
+            
+            // 在新标签页中打开降水量分布图
+            const rainfallMapUrl = `${window.location.origin}/rainfall-map`
+            window.open(rainfallMapUrl, '_blank', 'noopener,noreferrer')
         }
-        
     },
     computed:{
         mathIsLike(){//判断是否订阅
@@ -191,5 +215,43 @@ export default {
     line-height: 20px;
     width: auto;
     border-radius: 9.5px;
+}
+.rainfall-btn-container {
+    margin-left: auto;
+    padding-left: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.rainfall-btn {
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.rainfall-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+.rainfall-btn i {
+    margin-right: 5px;
+}
+
+/* 覆盖 element-ui 的默认样式 */
+.rainfall-btn.el-button:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.rainfall-btn.el-button:active {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: white;
 }
 </style>

@@ -1,8 +1,6 @@
 <template>
   <div v-if="show" id="box1">
-      <div id="box2"  ref="box22"> 
-
-      </div>
+      <div id="box2" ref="box22"></div>
   </div>
 </template>
 
@@ -88,7 +86,14 @@ export default {
             type: 'line',
             areaStyle: {}
             }
-        ]
+        ],
+        grid: {
+            top: '15%',
+            left: '3%',
+            right: '4%',
+            bottom: '8%',
+            containLabel: true
+        },
         };
 
         option && this.myChart.setOption(option);
@@ -117,20 +122,23 @@ export default {
 
 <style scoped>
 #box1 {
-    /* margin-top:30px; */
     width: 799px;
-    height: 128px;
-    margin-left: auto;
-    margin-right: auto;
-    
-    padding: 30px;
+    height: auto;
+    margin: 25px auto;
+    padding: 20px 30px 8px 30px;
     background-color: rgba(0,0,0,.1);
-    /* background-color: rgb(112, 44, 44); */
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
-#box2{
-    padding: 0;
+
+#box1:hover {
+    background-color: rgba(0,0,0,.15);
+    transform: translateY(-2px);
+}
+
+#box2 {
     width: 100%;
-    height:200px;
-    /* border: 1px solid black; */
+    height: 240px;
+    padding: 10px 0 4px 0;
 }
 </style>

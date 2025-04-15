@@ -2,9 +2,9 @@
   <div id="box1">
       <ul id="box2">
         <li id="everyOne" v-for="i in 4" :key="i">
-          <h2>{{index[i].iname}}</h2>
-          <p style="font-size:15px;text-indent: 2em;margin-top:10px;">{{index[i].detail}}</p>
-          <h3 style="height:16px;position:absolute;top:100px; line-height:16px;border-radius:15px;padding:2px;background-color: rgb(16, 194, 25);display:inline-block;">{{index[i].ivalue}}</h3>
+          <h2 class="index-title">{{index[i].iname}}</h2>
+          <p class="index-detail">{{index[i].detail}}</p>
+          <div class="index-value">{{index[i].ivalue}}</div>
         </li>
       </ul>
   </div>
@@ -19,34 +19,68 @@ export default {
 <style scoped>
 #box1 {
     margin-top: 25px;
-    /* margin-top:30px; */
     width: 799px;
-    height: 128px;
+    height: auto;
+    min-height: 128px;
     margin-left: auto;
     margin-right: auto;
     color: #fff;
     font-family: '微软雅黑';
-    background-color: rgba(0, 0, 0,0.1);
-    
-    
-    
-    
-    
+    background-color: rgba(0, 0, 0, 0.1);
     padding: 30px;
-    /* padding: 30px; */
-    
 }
+
 #box2 {
-  display: flex;
-}
-#everyOne{
-  position: relative;
-  width: 25%;
-  height: 130px ;
-  /* background-color: rgba(0, 0,0,0.1); */
-  /* border: 1px solid black; */
-  margin-right: 10px;
-
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
 }
 
+#everyOne {
+    position: relative;
+    width: 23%;
+    min-height: 130px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#everyOne:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.index-title {
+    font-size: 18px;
+    margin: 0 0 15px 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.index-detail {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 10px 0;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: justify;
+}
+
+.index-value {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    padding: 4px 12px;
+    background-color: rgb(16, 194, 25);
+    border-radius: 15px;
+    font-size: 14px;
+    color: white;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.index-value:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(16, 194, 25, 0.3);
+}
 </style>
