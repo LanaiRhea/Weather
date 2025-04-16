@@ -36,7 +36,7 @@
         <el-table-column
           prop="time"
           label="日期"
-          width="215"
+          width="217"
           align="center"
           sortable>
           <template slot-scope="scope">
@@ -46,7 +46,7 @@
         <el-table-column
           prop="rainfall"
           label="降雨量(mm)"
-          width="195"
+          width="167"
           align="center">
           <template slot-scope="scope">
             <span :style="{ color: getRainfallColor(scope.row.rainfall) }">
@@ -57,7 +57,7 @@
         <el-table-column
           prop="minTemp"
           label="最低气温(°C)"
-          width="195"
+          width="167"
           align="center">
           <template slot-scope="scope">
             <span :style="{ color: getTemperatureColor(scope.row.minTemp) }">
@@ -68,7 +68,7 @@
         <el-table-column
           prop="maxTemp"
           label="最高气温(°C)"
-          width="195"
+          width="167"
           align="center">
           <template slot-scope="scope">
             <span :style="{ color: getTemperatureColor(scope.row.maxTemp) }">
@@ -78,7 +78,7 @@
         </el-table-column>
         <el-table-column
           label="日温差(°C)"
-          width="195"
+          width="167"
           align="center">
           <template slot-scope="scope">
             <span :style="{ color: getTempDiffColor(scope.row.maxTemp - scope.row.minTemp) }">
@@ -89,7 +89,7 @@
         <el-table-column
           prop="maxWindSpeed"
           label="最大风速(m/s)"
-          width="195"
+          width="167"
           align="center">
           <template slot-scope="scope">
             <span :style="{ color: getWindSpeedColor(scope.row.maxWindSpeed) }">

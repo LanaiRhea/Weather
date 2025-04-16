@@ -16,11 +16,11 @@
         :highlight-current-row="true">
         <el-table-column
           fixed
-          prop="id"
-          label="ID"
-          width="280"
+          type="index"
+          label="序号"
+          width="80"
           align="center"
-          show-overflow-tooltip>
+          :index="indexMethod">
         </el-table-column>
         <el-table-column
           prop="nickname"
@@ -222,6 +222,9 @@ export default {
           }
         }
       })
+    },
+    indexMethod(index) {
+      return index + 1;
     }
   },
   created() {

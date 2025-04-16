@@ -15,11 +15,11 @@
         :stripe="true"
         :highlight-current-row="true">
         <el-table-column
-          prop="id"
-          label="ID"
-          width="280"
+          type="index"
+          label="序号"
+          width="80"
           align="center"
-          show-overflow-tooltip>
+          :index="indexMethod">
         </el-table-column>
         <el-table-column
           prop="address"
@@ -97,6 +97,9 @@ export default {
         };
     },
     methods: {
+        indexMethod(index) {
+            return index + 1;
+        },
         // 获取所有地区数据
         async getAddressList() {
             try {
