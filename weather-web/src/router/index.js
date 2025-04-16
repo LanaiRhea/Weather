@@ -66,8 +66,15 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: '/user-info',
+    name: 'UserInfo',
+    component: () => import('@/views/UserInfo'),
+    meta: {
+      requiresAuth: true
+    }
   }
-  
 ]
 
 const router = new VueRouter({

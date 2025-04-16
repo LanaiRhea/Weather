@@ -46,3 +46,14 @@ export function updateWarningStatus(id, status) {
     }
   })
 }
+
+// 获取预警信息列表
+export function getWarnings() {
+  return request({
+    url: '/warning/list',
+    method: 'get',
+    params: {
+      status: 1  // 只获取已发布的预警信息
+    }
+  })
+}

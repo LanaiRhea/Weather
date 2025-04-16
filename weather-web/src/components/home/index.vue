@@ -38,118 +38,71 @@
             <p v-else class="login-tip">未登录</p>
           </div>
 
-          <!-- 登录表单 -->
-          <div v-if="!userInfo.nickname" v-show="register==0" class="login-form">
-            <el-form>
-              <el-form-item>
-                <div class="input-with-icon">
-                  <i class="el-icon-user-solid"></i>
-                  <input v-model="user.username" placeholder="请输入账号" class="custom-input" />
-                </div>
-              </el-form-item>
-              <el-form-item>
-                <div class="input-with-icon">
-                  <i class="el-icon-lock"></i>
-                  <input type="password" v-model="user.password" placeholder="请输入密码" class="custom-input" />
-                </div>
-              </el-form-item>
-            </el-form>
-            <button class="custom-button login-button" @click="login">登 录</button>
-            <div class="form-footer">
-              <a class="register-link" @click="register=1">免费注册</a>
+          <!-- 未登录状态显示登录/注册表单 -->
+          <div v-if="!userInfo.nickname">
+            <div v-show="register==0" class="login-form">
+              <el-form>
+                <el-form-item>
+                  <div class="input-with-icon">
+                    <i class="el-icon-user-solid"></i>
+                    <input v-model="user.username" placeholder="请输入账号" class="custom-input" />
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <div class="input-with-icon">
+                    <i class="el-icon-lock"></i>
+                    <input type="password" v-model="user.password" placeholder="请输入密码" class="custom-input" />
+                  </div>
+                </el-form-item>
+              </el-form>
+              <button class="custom-button login-button" @click="login">登 录</button>
+              <div class="form-footer">
+                <a class="register-link" @click="register=1">免费注册</a>
+              </div>
+            </div>
+
+            <div v-show="register==1" class="register-form">
+              <el-form>
+                <el-form-item>
+                  <div class="input-with-icon">
+                    <i class="el-icon-user"></i>
+                    <input v-model="userR.nickname" placeholder="请输入昵称" class="custom-input" />
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <div class="input-with-icon">
+                    <i class="el-icon-user-solid"></i>
+                    <input v-model="userR.username" placeholder="请输入账号" class="custom-input" />
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <div class="input-with-icon">
+                    <i class="el-icon-lock"></i>
+                    <input type="password" v-model="userR.password" placeholder="请输入密码" class="custom-input" />
+                  </div>
+                </el-form-item>
+              </el-form>
+              <button class="custom-button register-button" @click="gotoRegister">注 册</button>
+              <div class="form-footer">
+                <a class="login-link" @click="register=0">返回登录</a>
+              </div>
             </div>
           </div>
 
-          <!-- 注册表单 -->
-          <div v-show="register==1" class="register-form">
-            <el-form>
-              <el-form-item>
-                <div class="input-with-icon">
-                  <i class="el-icon-user"></i>
-                  <input v-model="userR.nickname" placeholder="请输入昵称" class="custom-input" />
-                </div>
-              </el-form-item>
-              <el-form-item>
-                <div class="input-with-icon">
-                  <i class="el-icon-user-solid"></i>
-                  <input v-model="userR.username" placeholder="请输入账号" class="custom-input" />
-                </div>
-              </el-form-item>
-              <el-form-item>
-                <div class="input-with-icon">
-                  <i class="el-icon-lock"></i>
-                  <input type="password" v-model="userR.password" placeholder="请输入密码" class="custom-input" />
-                </div>
-              </el-form-item>
-            </el-form>
-            <button class="custom-button register-button" @click="gotoRegister">注 册</button>
-            <div class="form-footer">
-              <a class="login-link" @click="register=0">返回登录</a>
-            </div>
-          </div>
-
-          <!-- 用户信息展示 -->
-          <div v-if="userInfo.nickname" class="user-info">
-            <h3 class="info-title">基本信息</h3>
-            <div class="info-item">
-              <span class="info-label">ID</span>
-              <span class="info-value">{{userInfo.id}}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">账号</span>
-              <span v-show="edit==0" class="info-value">{{userInfo.username}}</span>
-              <div v-show="edit==1" class="edit-input-group">
-                <input class="edit-input" v-model="userInfo.username" />
-                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.username)">
-                  <i class="el-icon-check"></i>
-                </el-button>
-              </div>
-              <i v-show="edit==0" class="el-icon-edit edit-icon" @click="edit=1"></i>
-            </div>
-            <div class="info-item">
-              <span class="info-label">邮箱</span>
-              <span v-show="edit2==0" class="info-value">{{userInfo.email}}</span>
-              <div v-show="edit2==2" class="edit-input-group">
-                <input class="edit-input" v-model="userInfo.email" />
-                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.email)">
-                  <i class="el-icon-check"></i>
-                </el-button>
-              </div>
-              <i v-show="edit2==0" class="el-icon-edit edit-icon" @click="edit2=2"></i>
-            </div>
-            <div class="info-item">
-              <span class="info-label">姓名</span>
-              <span v-show="edit3==0" class="info-value">{{userInfo.nickname}}</span>
-              <div v-show="edit3==3" class="edit-input-group">
-                <input class="edit-input" v-model="userInfo.nickname" />
-                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.nickname)">
-                  <i class="el-icon-check"></i>
-                </el-button>
-              </div>
-              <i v-show="edit3==0" class="el-icon-edit edit-icon" @click="edit3=3"></i>
-            </div>
-            <div class="info-item">
-              <span class="info-label">性别</span>
-              <span v-show="edit4==0" class="info-value">{{userInfo.sex}}</span>
-              <div v-show="edit4==4" class="edit-input-group">
-                <input class="edit-input" v-model="userInfo.sex" />
-                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.sex)">
-                  <i class="el-icon-check"></i>
-                </el-button>
-              </div>
-              <i v-show="edit4==0" class="el-icon-edit edit-icon" @click="edit4=4"></i>
-            </div>
-            <div class="info-item">
-              <span class="info-label">年龄</span>
-              <span v-show="edit5==0" class="info-value">{{userInfo.age}}</span>
-              <div v-show="edit5==5" class="edit-input-group">
-                <input class="edit-input" v-model="userInfo.age" />
-                <el-button type="success" size="mini" @click="submitUserinfo(userInfo.age)">
-                  <i class="el-icon-check"></i>
-                </el-button>
-              </div>
-              <i v-show="edit5==0" class="el-icon-edit edit-icon" @click="edit5=5"></i>
-            </div>
+          <!-- 已登录状态显示用户信息 -->
+          <div v-else class="user-info">
+            <el-descriptions :column="1" border>
+              <el-descriptions-item label="用户ID">{{userInfo.id}}</el-descriptions-item>
+              <el-descriptions-item label="账号">{{userInfo.username}}</el-descriptions-item>
+              <el-descriptions-item label="邮箱">{{userInfo.email}}</el-descriptions-item>
+              <el-descriptions-item label="性别">{{userInfo.sex}}</el-descriptions-item>
+              <el-descriptions-item label="年龄">{{userInfo.age}}</el-descriptions-item>
+              <el-descriptions-item label="角色">
+                <el-tag :type="userInfo.role === '1' ? 'success' : 'info'">
+                  {{userInfo.role === '1' ? '管理员' : '普通用户'}}
+                </el-tag>
+              </el-descriptions-item>
+            </el-descriptions>
 
             <div class="action-buttons">
               <el-button type="primary" @click="editPwd=1" size="small">修改密码</el-button>
@@ -188,7 +141,7 @@ export default {
     return {
       register:0,
       img:'默认头像',
-      userInfo:{},
+      userInfo: this.$store.state.userinfo || {},  // 初始化时从store获取
       editUser:{},
       user:{},
       we:{},
@@ -201,12 +154,20 @@ export default {
       edit5: 0,
       editPwd: 0,
       userR:{}
-      
     }
   },
   computed:{
     userInfoCache(){
       return this.$store.state.userinfo
+    }
+  },
+  watch: {
+    'userInfoCache': {
+      handler(newVal) {
+        this.userInfo = newVal;
+        this.img = newVal.id ? '登录成功头像' : '默认头像';
+      },
+      immediate: true
     }
   },
   methods:{
@@ -233,6 +194,8 @@ export default {
         pubsub.publish('updataHeadImg')
         this.img = '登录成功头像'
         this.drawer = false
+        // 登录成功后刷新页面
+        this.$router.go(0)
       })
     },
      submitUserinfo(e){//修改身份信息

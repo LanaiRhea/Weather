@@ -35,13 +35,15 @@ export default {
     justify-content: space-between;
     margin: 0;
     padding: 0;
+    width: 100%;
 }
 
 #everyOne {
     position: relative;
-    width: 23%;
-    min-height: 130px;
-    padding: 15px;
+    width: 22%;
+    min-height: 160px;
+    padding: 25px 20px;
+    margin: 0 10px;
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -60,16 +62,17 @@ export default {
 
 .index-detail {
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.8;
     margin: 10px 0;
     color: rgba(255, 255, 255, 0.8);
     text-align: justify;
+    min-height: 150px;
 }
 
 .index-value {
     position: absolute;
-    bottom: 15px;
-    left: 15px;
+    bottom: 25px;
+    left: 20px;
     padding: 4px 12px;
     background-color: rgb(16, 194, 25);
     border-radius: 15px;

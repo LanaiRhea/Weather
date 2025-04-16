@@ -42,7 +42,21 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="预警内容" prop="content" align="center" show-overflow-tooltip />
+      <el-table-column label="预警内容" prop="content" align="center" min-width="200">
+        <template slot-scope="scope">
+          <el-popover
+            placement="top-start"
+            width="400"
+            trigger="hover">
+            <div class="warning-content-detail">
+              {{ scope.row.content }}
+            </div>
+            <div slot="reference" class="warning-content-preview">
+              {{ scope.row.content }}
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" prop="createTime" align="center" width="180">
         <template slot-scope="scope">
           {{ formatDate(scope.row.createTime) }}
@@ -373,5 +387,26 @@ export default {
 
 .el-button + .el-button {
   margin-left: 10px;
+}
+
+.warning-content-preview {
+  font-size: 14px;
+  color: #606266;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.warning-content-detail {
+  font-size: 14px;
+  color: #606266;
+  line-height: 1.6;
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 </style>
