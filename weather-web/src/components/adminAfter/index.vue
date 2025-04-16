@@ -28,6 +28,10 @@
                 <i class="el-icon-location"></i>
                 <span>地区管理</span>
               </el-menu-item>
+              <el-menu-item index="daily-weather">
+                <i class="el-icon-s-data"></i>
+                <span>地域数据</span>
+              </el-menu-item>
             </el-menu>
           </div>
         </el-aside>

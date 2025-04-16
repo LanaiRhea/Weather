@@ -38,6 +38,10 @@ const routes = [
           requiresAuth: true,
           requiresAdmin: true
         }
+      },
+      {
+        path: 'daily-weather',
+        component: () => import('@/views/DailyWeather')
       }
     ]
   },
