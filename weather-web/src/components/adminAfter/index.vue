@@ -32,6 +32,10 @@
                 <i class="el-icon-s-data"></i>
                 <span>地域数据</span>
               </el-menu-item>
+              <el-menu-item index="warning">
+                <i class="el-icon-warning"></i>
+                <span>预警管理</span>
+              </el-menu-item>
             </el-menu>
           </div>
         </el-aside>

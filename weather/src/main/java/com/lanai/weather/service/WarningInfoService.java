@@ -23,7 +23,9 @@ public interface WarningInfoService {
      * 分页查询预警信息
      * @param pageNum 页码
      * @param pageSize 每页大小
+     * @param status 预警状态（可选）
+     * @param type 预警类型（可选）
      * @return 分页结果
      */
-    ResData getWarningList(Integer pageNum, Integer pageSize);
+    ResData getWarningList(Integer pageNum, Integer pageSize, Integer status, String type);
 }

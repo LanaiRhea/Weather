@@ -40,8 +40,22 @@ const routes = [
         }
       },
       {
-        path: 'daily-weather',
-        component: () => import('@/views/DailyWeather')
+        path:'daily-weather',
+        name: 'daily-weather',
+        component: () => import('@/views/DailyWeather'),
+        meta: {
+          requiresAuth: true,
+          requiresAdmin: true
+        }
+      },
+      {
+        path:'warning',
+        name: 'warning',
+        component: () => import('@/views/Warning'),
+        meta: {
+          requiresAuth: true,
+          requiresAdmin: true
+        }
       }
     ]
   },

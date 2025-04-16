@@ -35,10 +35,11 @@ public class WarningInfoController {
     }
 
     @GetMapping("/list")
-    public ResData getWarningList(
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-        log.info("分页查询预警信息，页码：{}，每页数量：{}", pageNum, pageSize);
-        return warningInfoService.getWarningList(pageNum, pageSize);
+    public ResData getWarningList(@RequestParam(defaultValue = "1") Integer pageNum,
+                                @RequestParam(defaultValue = "10") Integer pageSize,
+                                @RequestParam(required = false) Integer status,
+                                @RequestParam(required = false) String type) {
+        log.info("获取预警列表，页码：{}，每页大小：{}，状态：{}，类型：{}", pageNum, pageSize, status, type);
+        return warningInfoService.getWarningList(pageNum, pageSize, status, type);
     }
 }

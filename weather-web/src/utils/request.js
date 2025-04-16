@@ -1,49 +1,65 @@
 import axios from 'axios'
-import {  Message } from 'element-ui'
+import { Message } from 'element-ui'
 // import store from '@/store'
 // import { getToken } from '@/utils/auth'
 
-// create an axios instance
+// 创建axios实例
 const service = axios.create({
-  baseURL: '/api', // url = base url + request url
-  // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  baseURL: process.env.VUE_APP_BASE_API || '/api', // 设置baseURL为/api
+  timeout: 15000 // 请求超时时间设置为15秒
 })
-//request.interceptors.response.use(
-service.interceptors.response.use(
-  response => {
-    
-      //统一异常处理
-      let status = response.status;
-      if(status !== 200) {
-        Message({
-          message: response.msg || 'Error',
-          type: 'error',
-          duration: 5 * 1000
-        })
-      }
-      let res = response.data;
-      // 如果是返回的文件
-      if (response.config.responseType === 'blob') {
-          return res
-      }
-      // 兼容服务端返回的字符串数据
-      if (typeof res === 'string') {
-          res = res ? JSON.parse(res) : res
-      }
-      return res;
+
+// 请求拦截器
+service.interceptors.request.use(
+  config => {
+    return config
   },
-  
   error => {
-      // console.log('err' + error) // for debug
-      // return Promise.reject(error)
-      Message({
-        message: '网路阻塞,请稍后重试！'+error || '网路阻塞,请稍后重试！',
-        type: 'warning',
-        duration: 5 * 1000
-      })
+    console.error('请求错误:', error)
+    return Promise.reject(error)
   }
 )
 
+// 响应拦截器
+service.interceptors.response.use(
+  response => {
+    const res = response.data
+
+    // 如果是文件下载，直接返回
+    if (response.config.responseType === 'blob') {
+      return res
+    }
+
+    // 兼容服务端返回的字符串数据
+    if (typeof res === 'string') {
+      try {
+        return JSON.parse(res)
+      } catch (e) {
+        return res
+      }
+    }
+
+    // 统一处理业务状态
+    if (res.code === 200 || res.status === 200) {
+      return res
+    } else {
+      Message({
+        message: res.msg || '请求失败',
+        type: 'error',
+        duration: 5 * 1000
+      })
+      return Promise.reject(new Error(res.msg || '请求失败'))
+    }
+  },
+  error => {
+    console.error('响应错误:', error)
+    Message({
+      message: error.message || '网络错误，请稍后重试',
+      type: 'error',
+      duration: 5 * 1000
+    })
+    return Promise.reject(error)
+  }
+)
 
 export default service
