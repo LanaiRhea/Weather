@@ -3,8 +3,7 @@ package com.lanai.weather.aspect;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
-/**
- */
+
 @Component
 @Aspect
 public class ExecutionAspect {

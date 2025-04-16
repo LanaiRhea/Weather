@@ -1,7 +1,6 @@
 package com.lanai.weather.Utils;
 
-/**
- */
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;

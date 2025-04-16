@@ -1,10 +1,9 @@
 package com.lanai.weather.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.lanai.weather.entity.Address;
+import com.lanai.weather.entity.WarningInfo;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
-public interface AddressMapper extends BaseMapper<Address> {
+public interface WarningInfoMapper extends BaseMapper<WarningInfo> {
 }

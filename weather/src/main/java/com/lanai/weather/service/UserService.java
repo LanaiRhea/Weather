@@ -3,8 +3,7 @@ package com.lanai.weather.service;
 import com.lanai.weather.Utils.ResData;
 import com.lanai.weather.entity.User;
 
-/**
- */
+
 public interface UserService {
     ResData UserLogin(User user);
 
