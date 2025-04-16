@@ -18,8 +18,9 @@
           fixed
           prop="id"
           label="ID"
-          width="80"
-          align="center">
+          width="280"
+          align="center"
+          show-overflow-tooltip>
         </el-table-column>
         <el-table-column
           prop="nickname"
