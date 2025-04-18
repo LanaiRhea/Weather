@@ -196,6 +196,8 @@ export default {
         this.drawer = false
         // 登录成功后刷新页面
         this.$router.go(0)
+      }).catch(() => {
+        // 错误提示已在请求拦截器中处理，这里不需要重复处理
       })
     },
      submitUserinfo(e){//修改身份信息

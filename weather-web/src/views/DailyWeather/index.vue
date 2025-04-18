@@ -165,7 +165,7 @@
         <el-carousel height="600px" :interval="4000" arrow="always">
           <el-carousel-item>
             <div class="chart-item">
-              <h3 class="chart-title">月度降雨量分布</h3>
+              <h3 class="chart-title">月度降水量分布</h3>
               <img src="/analysis_results/monthly_rainfall.png" alt="月度降雨量分布">
             </div>
           </el-carousel-item>

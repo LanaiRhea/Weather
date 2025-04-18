@@ -20,7 +20,7 @@ public class WeatherController {
     private final AddressServiceImpl addressService;
 
     @GetMapping("/get")
-    public ResData getWeatherData(@RequestParam(value = "cityName",required = false,defaultValue = "北京") String cityName) {
+    public ResData getWeatherData(@RequestParam(value = "cityName",required = false,defaultValue = "舟山") String cityName) {
         log.info("查询天气,参数=>"+cityName);
         return weatherService.getWeatherData(cityName);
     }

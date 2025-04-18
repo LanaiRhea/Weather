@@ -53,11 +53,23 @@ service.interceptors.response.use(
   },
   error => {
     console.error('响应错误:', error)
-    Message({
-      message: error.message || '网络错误，请稍后重试',
-      type: 'error',
-      duration: 5 * 1000
-    })
+    // 阻止默认错误提示
+    error.preventDefault && error.preventDefault()
+    
+    // 处理500错误
+    if (error.response && error.response.status === 500) {
+      Message({
+        message: '用户名或密码错误',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    } else {
+      Message({
+        message: error.message || '网络错误，请稍后重试',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
     return Promise.reject(error)
   }
 )
