@@ -16,7 +16,41 @@ export default {
   name: 'RainfallMap',
   data() {
     return {
-      chart: null
+      chart: null,
+      // 添加省份与省会的映射关系
+      provinceCapitalMap: {
+        '北京市': '北京',
+        '天津市': '天津',
+        '上海市': '上海',
+        '重庆市': '重庆',
+        '河北省': '石家庄',
+        '河南省': '郑州',
+        '云南省': '昆明',
+        '辽宁省': '沈阳',
+        '黑龙江省': '哈尔滨',
+        '湖南省': '长沙',
+        '安徽省': '合肥',
+        '山东省': '济南',
+        '新疆维吾尔自治区': '乌鲁木齐',
+        '江苏省': '南京',
+        '浙江省': '杭州',
+        '江西省': '南昌',
+        '湖北省': '武汉',
+        '广西壮族自治区': '南宁',
+        '甘肃省': '兰州',
+        '山西省': '太原',
+        '内蒙古自治区': '呼和浩特',
+        '陕西省': '西安',
+        '吉林省': '长春',
+        '福建省': '福州',
+        '贵州省': '贵阳',
+        '广东省': '广州',
+        '青海省': '西宁',
+        '西藏自治区': '拉萨',
+        '四川省': '成都',
+        '宁夏回族自治区': '银川',
+        '海南省': '海口'
+      }
     }
   },
   mounted() {
@@ -56,7 +90,11 @@ export default {
         },
         tooltip: {
           trigger: 'item',
-          formatter: '{b}<br/>降水量：{c}毫米'
+          // 只修改tooltip的formatter，显示省会名称
+          formatter: (params) => {
+            const capital = this.provinceCapitalMap[params.name] || params.name
+            return `${capital}<br/>降水量：${params.value}毫米`
+          }
         },
         visualMap: {
           min: 0,
@@ -80,6 +118,7 @@ export default {
             emphasis: {
               label: {
                 show: true
+                // 移除标签的formatter，保持显示省份名称
               }
             },
             data: [
