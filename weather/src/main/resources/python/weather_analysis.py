@@ -5,69 +5,83 @@ import seaborn as sns
 from datetime import datetime
 import json
 import os
+import mysql.connector
 
 # 设置中文字体
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
-plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
 
-def load_data(file_path):
-    """从数据库导出的CSV文件加载数据"""
-    df = pd.read_csv(file_path)
-    df['time'] = pd.to_datetime(df['time'])
-    df['month'] = df['time'].dt.month
-    df['season'] = df['time'].dt.quarter
-    return df
+def load_data_from_db():
+    """从数据库直接加载数据（使用 mysql-connector-python）"""
+    try:
+        db_config = {
+            'host': 'localhost',
+            'user': 'root',
+            'password': 'root',  # 替换为你的数据库密码
+            'database': 'weather',
+            'port': 3306
+        }
+
+        # 建立连接
+        conn = mysql.connector.connect(**db_config)
+        
+        # 查询数据
+        query = """
+        SELECT time, rainfall, min_temp AS minTemp, max_temp AS maxTemp, max_wind_speed AS maxWindSpeed
+        FROM daily_weather
+        WHERE YEAR(time) = 2024
+        ORDER BY time
+        """
+
+        # 使用 pandas 读取结果
+        df = pd.read_sql(query, conn)
+        df['time'] = pd.to_datetime(df['time'])
+        df['month'] = df['time'].dt.month
+        df['season'] = df['time'].dt.quarter
+
+        conn.close()
+        return df
+
+    except Exception as e:
+        print(f"数据库连接错误: {str(e)}")
+        raise
 
 def generate_analysis(df, output_dir):
     """生成完整的数据分析报告和图表"""
-    # 创建输出目录
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        
-    # 1. 温度分析
+
+    plt.style.use('seaborn')
+
+    # 1. 温度趋势图
     plt.figure(figsize=(15, 8))
-    plt.plot(df['time'], df['maxTemp'], label='最高温度', color='red')
-    plt.plot(df['time'], df['minTemp'], label='最低温度', color='blue')
-    plt.fill_between(df['time'], df['minTemp'], df['maxTemp'], alpha=0.2)
-    plt.title('2024年温度变化趋势')
+    plt.plot(df['time'], df['maxTemp'], label='最高温度', color='#F56C6C', linewidth=2)
+    plt.plot(df['time'], df['minTemp'], label='最低温度', color='#409EFF', linewidth=2)
+    plt.fill_between(df['time'], df['minTemp'], df['maxTemp'], alpha=0.2, color='#909399')
+    plt.title('2024年温度变化趋势', fontsize=14)
     plt.xlabel('日期')
     plt.ylabel('温度 (°C)')
     plt.legend()
-    plt.grid(True)
-    plt.savefig(f'{output_dir}/temperature_trend.png')
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/temperature_trend.png', dpi=300)
     plt.close()
 
-    # 2. 降水量分析
+    # 2. 月降水柱状图
     plt.figure(figsize=(15, 8))
     monthly_rainfall = df.groupby('month')['rainfall'].sum()
-    monthly_rainfall.plot(kind='bar')
-    plt.title('2024年月度降水量分布')
+    ax = monthly_rainfall.plot(kind='bar', color='#409EFF', alpha=0.7)
+    plt.title('2024年月度降水量分布', fontsize=14)
     plt.xlabel('月份')
     plt.ylabel('降水量 (mm)')
-    plt.grid(True)
-    plt.savefig(f'{output_dir}/monthly_rainfall.png')
+    for i, v in enumerate(monthly_rainfall):
+        ax.text(i, v + 1, f'{v:.1f}', ha='center', fontsize=10)
+    plt.grid(True, axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/monthly_rainfall.png', dpi=300)
     plt.close()
 
-    # 3. 温度与降水关系散点图
-    plt.figure(figsize=(10, 8))
-    plt.scatter(df['maxTemp'], df['rainfall'], alpha=0.5)
-    plt.title('温度与降水量关系')
-    plt.xlabel('最高温度 (°C)')
-    plt.ylabel('降水量 (mm)')
-    plt.grid(True)
-    plt.savefig(f'{output_dir}/temp_rain_correlation.png')
-    plt.close()
-
-    # 4. 风速分布
-    plt.figure(figsize=(12, 6))
-    sns.histplot(data=df, x='maxWindSpeed', bins=30)
-    plt.title('2024年风速分布')
-    plt.xlabel('最大风速 (m/s)')
-    plt.ylabel('频次')
-    plt.savefig(f'{output_dir}/wind_distribution.png')
-    plt.close()
-
-    # 5. 生成统计报告
+    # 3. JSON 报告
     stats = {
         'temperature': {
             'max_temp': {
@@ -90,7 +104,7 @@ def generate_analysis(df, output_dir):
                 'date': df.loc[df['rainfall'].idxmax(), 'time'].strftime('%Y-%m-%d')
             },
             'rainy_days': int(df['rainfall'][df['rainfall'] > 0].count()),
-            'monthly_distribution': df.groupby('month')['rainfall'].sum().to_dict()
+            'monthly_distribution': df.groupby('month')['rainfall'].sum().round(1).to_dict()
         },
         'wind': {
             'max_speed': {
@@ -107,54 +121,20 @@ def generate_analysis(df, output_dir):
         }
     }
 
-    # 保存统计报告
     with open(f'{output_dir}/stats.json', 'w', encoding='utf-8') as f:
         json.dump(stats, f, ensure_ascii=False, indent=2)
 
-    # 生成Markdown格式的分析报告
-    report = f"""# 2024年舟山市气象数据分析报告
-
-## 1. 温度分析
-- 最高温度: {stats['temperature']['max_temp']['value']:.1f}°C ({stats['temperature']['max_temp']['date']})
-- 最低温度: {stats['temperature']['min_temp']['value']:.1f}°C ({stats['temperature']['min_temp']['date']})
-- 平均最高温度: {stats['temperature']['max_temp']['avg']:.1f}°C
-- 平均最低温度: {stats['temperature']['min_temp']['avg']:.1f}°C
-
-## 2. 降水分析
-- 年总降水量: {stats['rainfall']['total']:.1f}mm
-- 最大日降水量: {stats['rainfall']['max']['value']:.1f}mm ({stats['rainfall']['max']['date']})
-- 降水天数: {stats['rainfall']['rainy_days']}天
-
-## 3. 风速分析
-- 最大风速: {stats['wind']['max_speed']['value']:.1f}m/s ({stats['wind']['max_speed']['date']})
-- 平均风速: {stats['wind']['avg_speed']:.1f}m/s
-
-## 4. 极端天气统计
-- 高温天数(>30°C): {stats['extreme_weather']['high_temp_days']}天
-- 低温天数(<0°C): {stats['extreme_weather']['low_temp_days']}天
-- 暴雨天数(>25mm): {stats['extreme_weather']['heavy_rain_days']}天
-- 大风天数(>10.7m/s): {stats['extreme_weather']['strong_wind_days']}天
-
-## 5. 月度降水分布
-"""
-    # 添加月度降水量数据
-    for month, rainfall in stats['rainfall']['monthly_distribution'].items():
-        report += f"- {month}月: {rainfall:.1f}mm\n"
-
-    # 保存报告
-    with open(f'{output_dir}/report.md', 'w', encoding='utf-8') as f:
-        f.write(report)
-
 def main():
-    # 设置输入输出路径
-    data_file = 'weather_data_2024.csv'  # 从数据库导出的CSV文件
-    output_dir = 'analysis_results'
-    
-    # 加载数据
-    df = load_data(data_file)
-    
-    # 生成分析报告和图表
-    generate_analysis(df, output_dir)
+    try:
+        output_dir = 'D:/Code/Weather/weather-web/public/analysis_results'
+        print("正在从数据库加载数据...")
+        df = load_data_from_db()
+        print("正在生成分析报告和图表...")
+        generate_analysis(df, output_dir)
+        print(f"分析完成！结果已保存到: {output_dir}")
+    except Exception as e:
+        print(f"错误: {str(e)}")
+        raise
 
 if __name__ == '__main__':
-    main() 
+    main()
