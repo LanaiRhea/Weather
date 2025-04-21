@@ -8,52 +8,52 @@ import os
 import mysql.connector
 
 # 设置中文字体
-plt.rcParams['font.sans-serif'] = ['SimHei']
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 正常显示中文
+plt.rcParams['axes.unicode_minus'] = False  # 正常显示负号
 
 def load_data_from_db():
-    """从数据库直接加载数据（使用 mysql-connector-python）"""
+    """从数据库加载数据"""
     try:
-        db_config = {
-            'host': 'localhost',
-            'user': 'root',
-            'password': 'root',  # 替换为你的数据库密码
-            'database': 'weather',
-            'port': 3306
-        }
-
-        # 建立连接
-        conn = mysql.connector.connect(**db_config)
+        conn = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='root',  # 修改为你的密码
+            database='weather',
+            port=3306
+        )
         
-        # 查询数据
         query = """
         SELECT time, rainfall, min_temp AS minTemp, max_temp AS maxTemp, max_wind_speed AS maxWindSpeed
         FROM daily_weather
         WHERE YEAR(time) = 2024
         ORDER BY time
         """
-
-        # 使用 pandas 读取结果
+        
         df = pd.read_sql(query, conn)
+        conn.close()
+
         df['time'] = pd.to_datetime(df['time'])
         df['month'] = df['time'].dt.month
         df['season'] = df['time'].dt.quarter
 
-        conn.close()
+        # 转换为数值型，避免绘图出错
+        df['rainfall'] = pd.to_numeric(df['rainfall'], errors='coerce')
+        df['minTemp'] = pd.to_numeric(df['minTemp'], errors='coerce')
+        df['maxTemp'] = pd.to_numeric(df['maxTemp'], errors='coerce')
+        df['maxWindSpeed'] = pd.to_numeric(df['maxWindSpeed'], errors='coerce')
+        
         return df
 
     except Exception as e:
-        print(f"数据库连接错误: {str(e)}")
+        print(f"数据库连接或读取失败: {str(e)}")
         raise
 
 def generate_analysis(df, output_dir):
-    """生成完整的数据分析报告和图表"""
+    """生成图表与统计JSON"""
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    plt.style.use('seaborn')
-
-    # 1. 温度趋势图
+    # 温度变化趋势
     plt.figure(figsize=(15, 8))
     plt.plot(df['time'], df['maxTemp'], label='最高温度', color='#F56C6C', linewidth=2)
     plt.plot(df['time'], df['minTemp'], label='最低温度', color='#409EFF', linewidth=2)
@@ -67,7 +67,7 @@ def generate_analysis(df, output_dir):
     plt.savefig(f'{output_dir}/temperature_trend.png', dpi=300)
     plt.close()
 
-    # 2. 月降水柱状图
+    # 月度降水量
     plt.figure(figsize=(15, 8))
     monthly_rainfall = df.groupby('month')['rainfall'].sum()
     ax = monthly_rainfall.plot(kind='bar', color='#409EFF', alpha=0.7)
@@ -76,12 +76,12 @@ def generate_analysis(df, output_dir):
     plt.ylabel('降水量 (mm)')
     for i, v in enumerate(monthly_rainfall):
         ax.text(i, v + 1, f'{v:.1f}', ha='center', fontsize=10)
-    plt.grid(True, axis='y', alpha=0.3)
+    plt.grid(True, alpha=0.3, axis='y')
     plt.tight_layout()
     plt.savefig(f'{output_dir}/monthly_rainfall.png', dpi=300)
     plt.close()
 
-    # 3. JSON 报告
+    # 统计数据
     stats = {
         'temperature': {
             'max_temp': {
@@ -131,10 +131,9 @@ def main():
         df = load_data_from_db()
         print("正在生成分析报告和图表...")
         generate_analysis(df, output_dir)
-        print(f"分析完成！结果已保存到: {output_dir}")
+        print(f"分析完成，结果保存于：{output_dir}")
     except Exception as e:
-        print(f"错误: {str(e)}")
-        raise
+        print(f"程序出错: {str(e)}")
 
 if __name__ == '__main__':
     main()
